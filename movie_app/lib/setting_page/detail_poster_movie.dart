@@ -225,3 +225,181 @@ class DetailsPosterWidget extends StatelessWidget {
             ),
           ),
         ),
+          // Movie information and movie poster
+        SizedBox(
+          width: size.width,
+          height: 297,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                alignment: Alignment.bottomCenter,
+                width: size.width / 2 - 10,
+                height: 200,
+                // color: Colors.orange,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        const FaIcon(
+                          FontAwesomeIcons.yahoo,
+                          size: 25,
+                          color: Color(0xff430297),
+                        ),
+                        Text('$movieRating / 5.0',
+                            style: GoogleFonts.montserratAlternates(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xffF9F9F9))),
+                        const FaIcon(
+                          FontAwesomeIcons.imdb,
+                          size: 25,
+                          color: Color(0xfff5de50),
+                        ),
+                        (movieImdbRating != '')
+                            ? Text('$movieImdbRating / 10.0',
+                                style: GoogleFonts.montserratAlternates(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xffF9F9F9)))
+                            : Text('NULL / 10.0',
+                                style: GoogleFonts.montserratAlternates(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xffF9F9F9)))
+                      ],
+                    ),
+                    SizedBox(
+                      width: 170,
+                      height: 68,
+                      child: Center(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Text(
+                                movieCnName,
+                                style: GoogleFonts.orbitron(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xffF9F9F9),
+                                ),
+                              ),
+                              Text(movieEnName,
+                                  style: GoogleFonts.orbitron(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xffF9F9F9)),
+                                  softWrap: false),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '片長 : $movieDuration\b',
+                      style: GoogleFonts.montserratAlternates(
+                          fontSize: 12, color: const Color(0xffF9F9F9)),
+                    ),
+                    Text(
+                      '上映日期 : $releaseMovieTime',
+                      style: GoogleFonts.orbitron(
+                          fontSize: 12, color: const Color(0xffF9F9F9)),
+                    ),
+                    SizedBox(
+                      width: size.width,
+                      height: 55,
+                      child: Center(
+                        child: ListView.builder(
+                            itemCount: movieCategory.length,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return MovieCategory(
+                                  context: context,
+                                  index: index,
+                                  movieCategory: movieCategory,
+                                  color: _categoryColorList);
+                            }),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+
+              //Movie Poster
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Hero(
+                      tag: movieId,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            boxShadow: const [
+                              BoxShadow(
+                                  color: Color(0xff000000),
+                                  offset: Offset(2, 1),
+                                  blurRadius: 2,
+                                  spreadRadius: -3),
+                            ],
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                              topLeft: Radius.circular(20.0),
+                              topRight: Radius.circular(20.0),
+                            ),
+                            image: DecorationImage(
+                              image: (moviePoster != null)
+                                  ? NetworkImage(
+                                      moviePoster,
+                                    )
+                                  : const Center(
+                                      child: CircularProgressIndicator()),
+                            )),
+                        margin: const EdgeInsets.only(right: 10),
+                        width: size.width / 2,
+                        height: 288,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    child: Container(
+                      width: 135,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(15.0),
+                          bottomRight: Radius.circular(15.0),
+                          topLeft: Radius.circular(15.0),
+                          topRight: Radius.circular(15.0),
+                        ),
+                      ),
+                      child: TextButton(
+                          onPressed: () {
+                            _launchInBrowser(movieTrailer);
+                          },
+                          child: Text(
+                            AppLocalizations.of(context).btnPlayTrailer,
+                            style: GoogleFonts.montserrat(
+                                color: Theme.of(context).focusColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          )),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}
