@@ -402,4 +402,171 @@ class DetailsPosterWidget extends StatelessWidget {
       ],
     );
   }
+  }
+
+class DetailsFullScreen extends StatelessWidget {
+  final String moviePhotos, tag;
+  const DetailsFullScreen({@required this.moviePhotos, @required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Center(
+          child: Hero(
+            tag: tag,
+            child: InteractiveViewer(
+              child: Image.network(
+                moviePhotos,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
+
+Widget MovieCategory(
+    {BuildContext context, int index, List movieCategory, List<Color> color}) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Container(
+        width: (movieCategory[index].length > 2) ? 100 : 50,
+        height: 30,
+        decoration: BoxDecoration(
+          color: color[index],
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(10.0),
+            bottomRight: Radius.circular(10.0),
+            topLeft: Radius.circular(10.0),
+            topRight: Radius.circular(10.0),
+          ),
+        ),
+        padding: const EdgeInsets.all(5),
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            movieCategory[index],
+            style: GoogleFonts.lato(
+                fontSize: 14,
+                color: (color[index] == Colors.black87)
+                    ? Colors.white
+                    : Colors.black,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class BookmarkIcon extends StatefulWidget {
+  final String movieId,
+      movieCnName,
+      movieEnName,
+      movieRating,
+      movieImdbRating,
+      movieDuration,
+      releaseMovieTime,
+      movieTrailer,
+      moviePoster,
+      movieIntroduction;
+  final double iconSize;
+  final Color iconColor;
+  final List<String> movieCategory, moviePhotos;
+  final List actors;
+  const BookmarkIcon(
+      {this.movieId,
+      this.movieCnName,
+      this.movieEnName,
+      this.movieRating,
+      this.movieImdbRating,
+      this.movieDuration,
+      this.releaseMovieTime,
+      this.movieTrailer,
+      this.moviePoster,
+      this.movieIntroduction,
+      this.movieCategory,
+      this.moviePhotos,
+      this.actors,
+      this.iconSize,
+      this.iconColor});
+  @override
+  _BookmarkIconState createState() => _BookmarkIconState();
+}
+
+class _BookmarkIconState extends State<BookmarkIcon> {
+  List valueList = [];
+  List keyList = [];
+  final myBox = HiveService.getMovieBox();
+
+  @override
+  Widget build(BuildContext context) {
+    myBox.toMap().forEach((key, value) {
+      keyList.add(key);
+      valueList.add(value.movieId);
+    });
+    debugPrint('valueList: $valueList');
+    debugPrint('keyList: $keyList');
+
+    return (valueList.contains(widget.movieId))
+        ? IconButton(
+            onPressed: () {
+              setState(() {
+                for (var i = 0; i < valueList.length; i++) {
+                  if (valueList[i] == widget.movieId) {
+                    //TODODialog to delete.
+                    valueList.removeAt(i);
+                    debugPrint('key element at ${keyList.elementAt(i)}');
+                    debugPrint('i at $i');
+                    deleteMovieWatchLater(hiveKey: keyList.elementAt(i));
+                  }
+                }
+              });
+            },
+            icon: Icon(
+              Icons.bookmark_rounded,
+              color: widget.iconColor,
+            ),
+            iconSize: widget.iconSize,
+          )
+        : IconButton(
+            onPressed: () {
+              setState(() {
+                addMovieWatchLater(
+                    widget.movieId,
+                    widget.movieCnName,
+                    widget.movieEnName,
+                    widget.movieRating,
+                    widget.movieImdbRating,
+                    widget.movieDuration,
+                    widget.movieCategory,
+                    widget.releaseMovieTime,
+                    widget.movieTrailer,
+                    widget.moviePoster,
+                    widget.moviePhotos,
+                    widget.movieIntroduction,
+                    widget.actors);
+                if (keyList.isNotEmpty) {
+                  if (myListKey.currentState != null) {
+                    myListKey.currentState.insertItem(keyList.length - 1);
+                  }
+                }
+
+                debugPrint('bookmark success');
+              });
+            },
+            //color: Color(0xffF5F5F5)
+            icon: Icon(
+              Icons.bookmark_border_rounded,
+              color: widget.iconColor,
+            ),
+            iconSize: widget.iconSize,
+          );
+  }
